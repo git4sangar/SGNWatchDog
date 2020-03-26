@@ -25,6 +25,7 @@
 #define UDP_Tx_PORT         (4952)
 #define BUFSIZE             (1024 * 10)
 #define MAX_INTERVAL_SECs   (30)
+#define DEAD_THRESHOLD_SECs (2 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
 
 class Process {
@@ -41,7 +42,6 @@ public:
     int getPid() { return pid; }
     int getLastPet() { return last_pet; }
 
-
     void setName(std::string name) { strName = name; }
     void setVer(int iVer) { ver = iVer; }
     void setRunCmd(std::string cmd) { strRun = cmd; }
@@ -55,7 +55,6 @@ class WatchDog {
     pthread_mutex_t wLock;
     std::map<std::string, int> cmds;
     std::vector<Process *> processes;
-    JsonFactory jsProcs;
 
     std::vector<Process *> getProcesses() { return processes; }
 

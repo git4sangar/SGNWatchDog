@@ -86,19 +86,32 @@ void WatchDog::pushIfNew(Process *newProc) {
     if(newProc) processes.push_back(newProc);
 }
 
+/*
+ * { "command" : "version_req",
+ *      "processes" : [
+ *              {"process_name" : "process1", "version" : 1, "isDead" : false},
+ *              {"process_name" : "process2", "version" : 1, "isDead" : false}
+ *           ]
+ * }
+ */
 std::string WatchDog::getAllVerAsJson() {
     std::string allProcJson;
-    JsonFactory jsRoot, jsObj;
+    JsonFactory jsProcs, jsRoot;
     pthread_mutex_lock(&wLock);
     for(Process *pProc : processes) {
+        JsonFactory jsObj;
+        bool isDead = (time(0) - pProc->getLastPet()) > DEAD_THRESHOLD_SECs;
         try {
             jsObj.addStringValue("process_name", pProc->getName());
             jsObj.addIntValue("version", pProc->getVer());
-            jsRoot.addArray(jsObj);
+            jsObj.addBoolValue("isDead", isDead);
+            jsProcs.appendToArray(jsObj);
         } catch(JsonException &je) {
             std::cout << je.what() << std::endl;
         }
     }
+    jsRoot.addStringValue("command", "version_req");
+    jsRoot.addJsonObj("processes", jsProcs);
     allProcJson = jsRoot.getJsonString();
     pthread_mutex_unlock(&wLock);
     return allProcJson;
@@ -109,7 +122,8 @@ void *WatchDog::wdogThread(void *pUserData) {
     while(true) {
         pthread_mutex_lock(&pThis->wLock);
         for(Process *pProc : pThis->getProcesses()) {
-            if(time(0) - pProc->getLastPet() > MAX_INTERVAL_SECs) {
+            int delta = time(0) - pProc->getLastPet();
+            if(delta > MAX_INTERVAL_SECs && delta < DEAD_THRESHOLD_SECs) {
                 std::cout << "WatchDog: Killing process " << pProc->getName() << std::endl;
                 kill(pProc->getPid(), 9);
                 pProc->launchProc();
@@ -158,6 +172,7 @@ void *WatchDog::recvThread(void *pUserData) {
 
                 case VERSION_REQ:
                     strPkt = pThis->getAllVerAsJson();
+                    std::cout << "Sending " << strPkt << std::endl;
                     pThis->sendPacket(UDP_Tx_PORT, strPkt);
                     break;
 

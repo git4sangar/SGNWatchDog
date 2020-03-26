@@ -137,7 +137,7 @@ void JsonFactory::addBoolValue(string strKey, bool bVal) {
 	}
 }
 
-void JsonFactory::addArray(JsonFactory jsObj) {
+void JsonFactory::appendToArray(JsonFactory jsObj) {
     if(NULL == jsObj.pJRoot) return;
     if(NULL == pJRoot) {
         pJRoot = json_array();

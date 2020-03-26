@@ -41,7 +41,8 @@ public:
     void addIntValue(string strKey, int iVal);
     void addBoolValue(string strKey, bool bVal);
     void addJsonObj(string strKey, JsonFactory jsObj);
-    void addArray(JsonFactory jsObj);
+    void appendToArray(JsonFactory jsObj);
+
     JsonFactory &operator=(JsonFactory &other);
     string getJsonString();
 
