@@ -7,12 +7,6 @@
 
 #include <iostream>
 
-//  socket
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-
 #include <sys/reboot.h>
 #include <string.h>
 #include <unistd.h>
@@ -23,13 +17,16 @@
 #include <cstdlib>
 #include <vector>
 #include <errno.h>
+#include "FileLogger.h"
 #include "JsonFactory.h"
 #include "WatchDog.h"
+#include "Utils.h"
 
-WatchDog :: WatchDog() : wLock(PTHREAD_MUTEX_INITIALIZER) {
+WatchDog :: WatchDog() : wLock(PTHREAD_MUTEX_INITIALIZER), info_log(Logger::getInstance()) {
     cmds["heart_beat"]  = HEART_BEAT;
     cmds["version_req"] = VERSION_REQ;
     cmds["reboot"]      = REBOOT_RPi;
+    cmds["upload_logs"] = UPLOAD_LOGS;
 }
 
 WatchDog :: ~WatchDog() {
@@ -60,8 +57,8 @@ void WatchDog::parseHeartBeat(std::string strPkt) {
         pProc->setRunCmd(strRun);
         pProc->setVer(ver);
 
+        info_log << "WatchDog: Parsed HeartBeat " << jsRoot.getJsonString() << std::endl;
         pthread_mutex_lock(&wLock);
-        std::cout << "WatchDog: Parsed JSON " << jsRoot.getJsonString() << std::endl;
         pushIfNew(pProc);   // pProc might be deleted beyond this point
         pthread_mutex_unlock(&wLock);
     } catch(JsonException &je) {}
@@ -83,7 +80,12 @@ void WatchDog::pushIfNew(Process *newProc) {
             break;
         }
     }
-    if(newProc) processes.push_back(newProc);
+    if(newProc) {
+        //  Process is just starting.
+        //  So give enough time for it to get up & running
+        newProc->setPet(time(0) + GET_UP_TIME_SECs);
+        processes.push_back(newProc);
+    }
 }
 
 /*
@@ -107,7 +109,7 @@ std::string WatchDog::getAllVerAsJson() {
             jsObj.addBoolValue("isDead", isDead);
             jsProcs.appendToArray(jsObj);
         } catch(JsonException &je) {
-            std::cout << je.what() << std::endl;
+            info_log << je.what() << std::endl;
         }
     }
     jsRoot.addStringValue("command", "version_req");
@@ -118,15 +120,25 @@ std::string WatchDog::getAllVerAsJson() {
 }
 
 void *WatchDog::wdogThread(void *pUserData) {
-    WatchDog *pThis = reinterpret_cast<WatchDog *>(pUserData);
+    WatchDog *pThis     = reinterpret_cast<WatchDog *>(pUserData);
+    Logger &info_log    = pThis->info_log;
     while(true) {
         pthread_mutex_lock(&pThis->wLock);
         for(Process *pProc : pThis->getProcesses()) {
             int delta = time(0) - pProc->getLastPet();
             if(delta > MAX_INTERVAL_SECs && delta < DEAD_THRESHOLD_SECs) {
-                std::cout << "WatchDog: Killing process " << pProc->getName() << std::endl;
+                info_log << "WatchDog: Killing process " << pProc->getName() << std::endl;
+                // We are going to kill the process & launch it again
+                // So don't expect a heart within CHECK_INTERVAL_SECs
+                // Give it a few more secs to get up & running
+                pProc->setPet(time(0) + GET_UP_TIME_SECs);
                 kill(pProc->getPid(), 9);
                 pProc->launchProc();
+            }
+            if(0 > delta) {
+                info_log << "WatchDog: As I'v killed " << pProc->getName()
+                        << ", I'm waiting for " << (pProc->getLastPet() - time(0)) + MAX_INTERVAL_SECs
+                        << " more secs for it to get up and send a heart-beat msg" << std::endl;
             }
         }
         pthread_mutex_unlock(&pThis->wLock);
@@ -136,21 +148,10 @@ void *WatchDog::wdogThread(void *pUserData) {
 }
 
 void *WatchDog::recvThread(void *pUserData) {
-    WatchDog *pThis = reinterpret_cast<WatchDog *>(pUserData);
+    WatchDog *pThis     = reinterpret_cast<WatchDog *>(pUserData);
+    Logger &info_log    = pThis->info_log;
 
-    int sockfd, optval;
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
-
-    //  Prepare UDP
-    struct sockaddr_in serveraddr;
-    bzero((char *) &serveraddr, sizeof(serveraddr));
-    serveraddr.sin_family       = AF_INET;
-    serveraddr.sin_addr.s_addr  = htonl(INADDR_ANY);
-    serveraddr.sin_port         = htons((unsigned short)UDP_Rx_PORT);
-
-    //  Bind the same
-    bind(sockfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
+    int sockfd = Utils::prepareRecvSock(UDP_Rx_PORT);
     struct sockaddr_in clientaddr;
     int clientlen, recvd;
     char buf[BUFSIZE];
@@ -164,7 +165,7 @@ void *WatchDog::recvThread(void *pUserData) {
         try {
             jsRoot.setJsonString(std::string(buf));
             jsRoot.validateJSONAndGetValue("command", strCmd);
-            std::cout << "Got command " << strCmd << std::endl;
+            info_log << "WatchDog: Got command " << strCmd << std::endl;
             switch(pThis->cmds[strCmd]) {
                 case HEART_BEAT:
                     pThis->parseHeartBeat(strPkt);
@@ -172,34 +173,27 @@ void *WatchDog::recvThread(void *pUserData) {
 
                 case VERSION_REQ:
                     strPkt = pThis->getAllVerAsJson();
-                    std::cout << "Sending " << strPkt << std::endl;
-                    pThis->sendPacket(UDP_Tx_PORT, strPkt);
+                    info_log << "WatchDog: Sending " << strPkt << std::endl;
+                    Utils::sendPacket(UDP_Tx_PORT, strPkt);
                     break;
 
                 case REBOOT_RPi:
+                    info_log << "WatchDog: Rebooting... " << strPkt << std::endl;
                     sync();
                     reboot(RB_AUTOBOOT);
                     break;
+
+                case UPLOAD_LOGS:
+                    info_log << "WatchDog: Sending log data" << std::endl;
+                    strPkt  = Utils::prepareLogPacket(info_log.getLogData());
+                    Utils::sendPacket(UDP_Tx_PORT, strPkt);
+                    break;
             }
         } catch(JsonException &je) {
-            std::cout << je.what() << std::endl;
+            info_log << je.what() << std::endl;
         }
     }
     return NULL;
-}
-
-void WatchDog::sendPacket(int port, std::string strPacket) {
-    struct hostent *he;
-
-    struct sockaddr_in their_addr;
-    int sockfd  = socket(AF_INET, SOCK_DGRAM, 0);
-    he  = gethostbyname("localhost");
-    their_addr.sin_family   = AF_INET;
-    their_addr.sin_port     = htons(port);
-    their_addr.sin_addr     = *((struct in_addr *)he->h_addr);
-    bzero(&(their_addr.sin_zero), 8);
-    sendto(sockfd, strPacket.c_str(), strPacket.length(), 0,
-             (struct sockaddr *)&their_addr, sizeof(struct sockaddr));
 }
 
 void Process::launchProc() {

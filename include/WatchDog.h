@@ -14,18 +14,18 @@
 #include <pthread.h>
 #include <vector>
 #include <map>
+#include "FileLogger.h"
 #include "JsonFactory.h"
 
 #define HEART_BEAT      (0)
 #define VERSION_REQ     (1)
 #define REBOOT_RPi      (2)
+#define UPLOAD_LOGS     (3)
 
-
-#define UDP_Rx_PORT         (4951)
-#define UDP_Tx_PORT         (4952)
 #define BUFSIZE             (1024 * 10)
 #define MAX_INTERVAL_SECs   (30)
 #define DEAD_THRESHOLD_SECs (2 * MAX_INTERVAL_SECs)
+#define GET_UP_TIME_SECs    (2 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
 
 class Process {
@@ -55,6 +55,7 @@ class WatchDog {
     pthread_mutex_t wLock;
     std::map<std::string, int> cmds;
     std::vector<Process *> processes;
+    Logger &info_log;
 
     std::vector<Process *> getProcesses() { return processes; }
 
