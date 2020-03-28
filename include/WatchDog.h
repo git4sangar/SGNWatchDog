@@ -24,7 +24,6 @@
 
 #define BUFSIZE             (1024 * 10)
 #define MAX_INTERVAL_SECs   (30)
-#define DEAD_THRESHOLD_SECs (2 * MAX_INTERVAL_SECs)
 #define GET_UP_TIME_SECs    (2 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
 
@@ -32,8 +31,9 @@ class Process {
     std::string strName, strRun;
     unsigned int pid, ver;
     unsigned int last_pet;
+    bool isPidValid;
 public:
-    Process() : pid(0), ver(0), last_pet(0) {}
+    Process() : pid(0), ver(0), last_pet(0), isPidValid(false) {}
     virtual ~Process() {}
 
     std::string getName() { return strName; }
@@ -41,13 +41,14 @@ public:
     std::string getRunCmd() { return strRun; }
     int getPid() { return pid; }
     int getLastPet() { return last_pet; }
+    bool isValidPid() { return isPidValid; }
 
     void setName(std::string name) { strName = name; }
     void setVer(int iVer) { ver = iVer; }
     void setRunCmd(std::string cmd) { strRun = cmd; }
-    void setPid(int id) { pid = id; }
+    void setPid(int id) { if(0 < id) {pid = id; isPidValid = true;}}
     void setPet(int tm) { last_pet = tm; }
-
+    void invalidatePid() {isPidValid = false;}
     void launchProc();
 };
 

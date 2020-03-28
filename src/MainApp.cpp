@@ -10,11 +10,14 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "WatchDog.h"
+#include "FileLogger.h"
 
 int main() {
     WatchDog wDog;
     pthread_t wdog_thread, recv_thread;
+    Logger &info_log = Logger::getInstance();
 
+    info_log << "Starting WatchDog" << std::endl;
     pthread_create(&wdog_thread, NULL, &WatchDog::wdogThread, &wDog);
     pthread_create(&recv_thread, NULL, &WatchDog::recvThread, &wDog);
 

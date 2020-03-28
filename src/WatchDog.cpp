@@ -75,7 +75,7 @@ void WatchDog::pushIfNew(Process *newProc) {
         if(0 == pProc->getName().compare(newProc->getName())) {
             pProc->setPet(newProc->getLastPet());
             pProc->setVer(newProc->getVer());
-            pProc->setPid(newProc->getPid());
+            if(newProc->isValidPid()) pProc->setPid(newProc->getPid());
             delete newProc; newProc = NULL;
             break;
         }
@@ -102,7 +102,7 @@ std::string WatchDog::getAllVerAsJson() {
     pthread_mutex_lock(&wLock);
     for(Process *pProc : processes) {
         JsonFactory jsObj;
-        bool isDead = (time(0) - pProc->getLastPet()) > DEAD_THRESHOLD_SECs;
+        bool isDead = !pProc->isValidPid();
         try {
             jsObj.addStringValue("process_name", pProc->getName());
             jsObj.addIntValue("version", pProc->getVer());
@@ -126,18 +126,19 @@ void *WatchDog::wdogThread(void *pUserData) {
         pthread_mutex_lock(&pThis->wLock);
         for(Process *pProc : pThis->getProcesses()) {
             int delta = time(0) - pProc->getLastPet();
-            if(delta > MAX_INTERVAL_SECs && delta < DEAD_THRESHOLD_SECs) {
+            if(delta > MAX_INTERVAL_SECs && pProc->isValidPid()) {
                 info_log << "WatchDog: Killing process " << pProc->getName() << std::endl;
                 // We are going to kill the process & launch it again
                 // So don't expect a heart within CHECK_INTERVAL_SECs
                 // Give it a few more secs to get up & running
                 pProc->setPet(time(0) + GET_UP_TIME_SECs);
-                kill(pProc->getPid(), 9);
+                kill(pProc->getPid(), 9); pProc->invalidatePid();
                 pProc->launchProc();
             }
             if(0 > delta) {
-                info_log << "WatchDog: As I'v killed " << pProc->getName()
-                        << ", I'm waiting for " << (pProc->getLastPet() - time(0)) + MAX_INTERVAL_SECs
+                info_log << "WatchDog: Process " << pProc->getName()
+                        << " is either newly created or killed by Watchdog. So waiting for "
+                        << (pProc->getLastPet() - time(0)) + MAX_INTERVAL_SECs
                         << " more secs for it to get up and send a heart-beat msg" << std::endl;
             }
         }

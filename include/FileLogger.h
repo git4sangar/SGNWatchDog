@@ -15,7 +15,6 @@
 #include <queue>
 
 #define MAX_LOG_SIZE    (1024 * 15)
-#define LOG_FILE_NAME	"log_file_"
 
 class Logger {
     bool bTime;
