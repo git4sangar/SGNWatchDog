@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    app:layout_behavior="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/txtVwInstructions"
+        android:gravity="left"
+        android:layout_height="210dp"
+        android:layout_width="300dp"
+        android:maxLines="15"
+        android:lines="15"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:textStyle="bold"
+        android:text="\nSteps to set WiFi credentials\n\n(01) Switch on Tethering / Hot Spot\n(02) Switch on Smart Meter\n(03) Wait a min to Power On\n(04) Press PING button\n(05) See if IP Address is displayed\n(06) Enter WiFi ssid and password\n(07) Press SET button\n(08) Success message displayed\n(09) Reboot Smart Meter">
+    </TextView>
+
+    <View
+        android:id="@+id/vwGap0"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/txtVwInstructions"
+        android:layout_toRightOf="@+id/btnBroadCast" />
+
+    <Button
+        android:id="@+id/btnBroadCast"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/vwGap0"
+        android:text="Ping" />
+
+    <View
+        android:id="@+id/vwGap1"
+        android:layout_width="30dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/vwGap0"
+        android:layout_toRightOf="@+id/btnBroadCast" />
+
+    <TextView
+        android:id="@+id/txtVwRPiIP"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:paddingTop="15dp"
+        android:layout_below="@+id/vwGap0"
+        android:layout_toRightOf="@+id/vwGap1"
+        android:text="IP Address"
+        android:textStyle="bold"/>
+
+    <View
+        android:id="@+id/vwGap2"
+        android:layout_width="35dp"
+        android:layout_height="20dp"
+        android:layout_below="@+id/btnBroadCast" />
+
+    <EditText
+        android:id="@+id/edtTxtSSID"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/vwGap2"
+        android:gravity="left"
+        android:hint="WiFi Name"
+        android:paddingTop="10dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edtTxtPSK"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/edtTxtSSID"
+        android:gravity="left"
+        android:hint="WiFi Password"
+        android:paddingTop="10dp"
+        android:textStyle="bold" />
+
+    <View
+        android:id="@+id/vwGap3"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/edtTxtPSK" />
+
+    <Button
+        android:id="@+id/sgnBtnSet"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@+id/vwGap3"
+        android:layout_below="@+id/edtTxtPSK"
+        android:text="Set" />
+</RelativeLayout>
