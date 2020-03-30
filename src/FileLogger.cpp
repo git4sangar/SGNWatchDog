@@ -58,7 +58,7 @@ Logger &Logger::operator << (StandardEndLine manip) {
 	if(ss_log.tellg() > MAX_LOG_SIZE) {
 		std::string strLog = ss_log.str();
 		ss_log.str(""); ss_log.clear();
-		Utils::sendPacket(UDP_Tx_PORT, Utils::prepareLogPacket(strLog));
+		Utils::sendPacket(Utils::prepareLogPacket(strLog), UDP_Tx_PORT);
 	}
 	pthread_mutex_unlock(&writeLock);
 	return *this;

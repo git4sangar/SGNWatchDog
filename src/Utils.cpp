@@ -13,6 +13,7 @@
 #include <netdb.h>
 
 #include <strings.h>
+#include <ifaddrs.h>
 #include "JsonFactory.h"
 #include "JsonException.h"
 #include "Utils.h"
@@ -28,12 +29,12 @@ std::string Utils::prepareLogPacket(std::string strLog) {
     return strPkt;
 }
 
-void Utils::sendPacket(int port, std::string strPacket) {
+void Utils::sendPacket(std::string strPacket, int port, std::string strToIp) {
     struct hostent *he;
 
     struct sockaddr_in their_addr;
     int sockfd  = socket(AF_INET, SOCK_DGRAM, 0);
-    he  = gethostbyname("localhost");
+    he  = gethostbyname(strToIp.c_str());
     their_addr.sin_family   = AF_INET;
     their_addr.sin_port     = htons(port);
     their_addr.sin_addr     = *((struct in_addr *)he->h_addr);
@@ -58,3 +59,33 @@ int Utils::prepareRecvSock(int iPort) {
     bind(sockfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
     return sockfd;
 }
+
+struct in_addr Utils::getIpv4IpOfEthIF(std::string if_prefix) {
+    struct ifaddrs *ifAddrs = NULL, *ifIter = NULL;
+    std::string ifName;
+    struct in_addr myip = {0};
+
+    //  Gets the ip address of all the interfaces
+    getifaddrs(&ifAddrs);
+
+    for(ifIter  = ifAddrs; NULL != ifIter; ifIter = ifIter->ifa_next) {
+        ifName  = ifIter->ifa_name;
+        //  skip interfaces other than ipv4 and if_name
+        if(ifIter->ifa_addr->sa_family == AF_INET && std::string::npos != ifName.find(if_prefix.c_str())) {
+            myip    = ((struct sockaddr_in *)ifIter->ifa_addr)->sin_addr;
+            break;
+        }
+    }
+    if(NULL != ifAddrs) freeifaddrs(ifAddrs);
+    return myip;
+}
+
+std::string Utils::getDotFormattedIp(struct in_addr ip) {
+    //char szAddr[INET_ADDRSTRLEN];
+    struct in_addr ipAddr;
+    ipAddr = ip;
+    //inet_ntoa(AF_INET, &ipAddr, szAddr, INET_ADDRSTRLEN);
+    char* ipString = inet_ntoa(ip);
+    return std::string(ipString);
+}
+

@@ -21,11 +21,16 @@
 #define VERSION_REQ     (1)
 #define REBOOT_RPi      (2)
 #define UPLOAD_LOGS     (3)
+#define WiFi_SSID       (4)
+#define WHERE_R_U       (5)
 
-#define BUFSIZE             (1024 * 10)
+#define BUFFSIZE             (1024 * 10)
 #define MAX_INTERVAL_SECs   (30)
 #define GET_UP_TIME_SECs    (2 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
+
+#define WPA_SUPPLICANT_FILE     "/etc/wpa_supplicant/wpa_supplicant.conf"
+//#define WPA_SUPPLICANT_FILE     "/home/tstone10/sgn/bkup/private/projs/SGNBundle/common/wpa_supplicant.conf"
 
 class Process {
     std::string strName, strRun;
@@ -67,7 +72,8 @@ public:
     std::string getAllVerAsJson();
     void parseHeartBeat(std::string strBeat);
     void pushIfNew(Process *pProc);
-    void sendPacket(int port, std::string strPkt);
+    bool updateSSID(std::string strJson);
+    std::string removeSSID(std::string strFile, std::string strSSID);
 
     static void *recvThread(void *);
     static void *wdogThread(void *);
