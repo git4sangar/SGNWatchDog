@@ -297,7 +297,7 @@ void *WatchDog::recvThread(void *pUserData) {
                     break;
 
                 case WHERE_R_U:
-                    ip      = Utils::getIpv4IpOfEthIF("wlp");
+                    ip      = Utils::getIpv4IpOfEthIF(WiFi_INTERFACE);
                     strIam  = Utils::getDotFormattedIp(ip);
                     ss << "{ \"command\" : \"where_are_you\", \"ip\" : \"" << strIam << "\"}";
                     strPkt  = ss.str();

@@ -31,6 +31,8 @@
 
 #define WPA_SUPPLICANT_FILE     "/etc/wpa_supplicant/wpa_supplicant.conf"
 //#define WPA_SUPPLICANT_FILE     "/home/tstone10/sgn/bkup/private/projs/SGNBundle/common/wpa_supplicant.conf"
+#define WiFi_INTERFACE          "wlan"
+//#define WiFi_INTERFACE          "wlp"
 
 class Process {
     std::string strName, strRun;
