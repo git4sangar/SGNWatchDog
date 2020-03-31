@@ -14,6 +14,7 @@
 
 #include <strings.h>
 #include <ifaddrs.h>
+#include <unistd.h>
 #include "JsonFactory.h"
 #include "JsonException.h"
 #include "Utils.h"
@@ -41,6 +42,7 @@ void Utils::sendPacket(std::string strPacket, int port, std::string strToIp) {
     bzero(&(their_addr.sin_zero), 8);
     sendto(sockfd, strPacket.c_str(), strPacket.length(), 0,
              (struct sockaddr *)&their_addr, sizeof(struct sockaddr));
+    close(sockfd);
 }
 
 int Utils::prepareRecvSock(int iPort) {

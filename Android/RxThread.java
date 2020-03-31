@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static android.content.Context.WIFI_SERVICE;
 
 public class RxThread implements Runnable {
     private static RxThread rxThread = null;
@@ -47,6 +46,12 @@ public class RxThread implements Runnable {
     }
 
     synchronized public void subscribe(OnDataListener listener) {
+        for(Iterator<OnDataListener> it = listeners.iterator(); it.hasNext();) {
+            if(it.next().getName().equals(listener.getName())) {
+                it.remove();
+                break;
+            }
+        }
         listeners.add(listener);
     }
 
@@ -63,9 +68,9 @@ public class RxThread implements Runnable {
                     DatagramPacket pkt;
                     if(0 < total) {
                         pkt = new DatagramPacket(byData, 0, total, IPAddress, UDP_Tx_PORT);
+                    	Log.i("SGN", "Sending " + byData + " to " + IPAddress + ":" + UDP_Tx_PORT);
                         client_socket.send(pkt);
                     }
-                    Log.i("SGN", "Sending " + byData + " to " + IPAddress + ":" + UDP_Tx_PORT);
                     client_socket.close();
                 } catch(SocketException se) {
                     se.printStackTrace();

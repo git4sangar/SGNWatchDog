@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         rxThread.subscribe(new OnDataListener() {
             @Override
+            public String getName() {return "ActivityMain";}
+
+            @Override
             public void onUDPPacket(String respPkt) {
                 String strCmd;
                 try {
@@ -57,8 +60,13 @@ public class MainActivity extends AppCompatActivity {
 
                     strCmd  = jObject.getString("command");
                     if(strCmd.equals("where_are_you")) {
-                        String strIP = jObject.getString("ip");
-                        txtVwRPiIp.setText(strIP);
+                        final String strIP = jObject.getString("ip");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txtVwRPiIp.setText(strIP);
+                            }
+                        });
                         strRPiIP    = strIP;
                     }
                     if(strCmd.equals("wifi_details")) {

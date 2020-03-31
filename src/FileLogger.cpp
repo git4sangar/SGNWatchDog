@@ -30,8 +30,8 @@ void Logger::stampTime() {
 	gettimeofday(&st,NULL);
 
 	//	why do i need secs since epoch? get secs from now
-	//	1584718500 => secs since epoch till now (20-Mar-20 21:05)
-	unsigned long secs	= st.tv_sec - 1584718500;
+	//	1584718500 => secs since epoch till now (31-Mar-20 12:30)
+	unsigned long secs	= st.tv_sec - 1585638057;
 	secs = secs % 36000;	// reset secs every 10 hours
 	unsigned long msecs	= st.tv_usec / 1000;
 	unsigned long usecs	= st.tv_usec % 1000;
