@@ -124,12 +124,26 @@ std::string WatchDog::getAllVerAsJson() {
     return allProcJson;
 }
 
+void WatchDog::addMeToProcList() {
+    Process *pProc  = new Process();
+    pProc->setName(WDOG_PROC_NAME);
+    pProc->setPid(0);
+    pProc->setPet(time(0));
+    pProc->setRunCmd("");
+    pProc->setVer(WATCHDOG_VERSION);
+    processes.push_back(pProc);
+}
+
 void *WatchDog::wdogThread(void *pUserData) {
     WatchDog *pThis     = reinterpret_cast<WatchDog *>(pUserData);
     Logger &info_log    = pThis->info_log;
     while(true) {
         pthread_mutex_lock(&pThis->wLock);
         for(Process *pProc : pThis->getProcesses()) {
+
+            //  Skip myself
+            if(!pProc->getName().compare(WDOG_PROC_NAME)) continue;
+
             int delta = time(0) - pProc->getLastPet();
             if(delta > MAX_INTERVAL_SECs && pProc->isValidPid()) {
                 info_log << "WatchDog: Killing process " << pProc->getName() << std::endl;

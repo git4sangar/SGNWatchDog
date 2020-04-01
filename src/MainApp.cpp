@@ -25,6 +25,8 @@ int main() {
     }
 
     WatchDog wDog;
+    wDog.addMeToProcList();
+
     pthread_t wdog_thread, recv_thread;
     pthread_create(&wdog_thread, NULL, &WatchDog::wdogThread, &wDog);
     pthread_create(&recv_thread, NULL, &WatchDog::recvThread, &wDog);
