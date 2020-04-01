@@ -35,6 +35,7 @@ bool Utils::isNewWDogAvailable() {
             fwrite(chunk, 1, len, fpDst);
         }
         fwrite(chunk, 1, len, fpDst);
+	fclose(fpSrc); fclose(fpDst);
         bRet = true;
     }
     unlink(strNewWDog.c_str());

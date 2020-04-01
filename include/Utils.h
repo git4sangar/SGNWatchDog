@@ -21,8 +21,8 @@
 #define UDP_DROID_PORT      (4953)
 #define BUFFSIZE            (1024 * 10)
 
-//#define TECHNO_SPURS_ROOT_PATH      "/home/pi/Technospurs/"
-#define TECHNO_SPURS_ROOT_PATH      "/home/tstone10/sgn/bkup/private/projs/SGNBarc/Technospurs/"
+#define TECHNO_SPURS_ROOT_PATH      "/home/pi/Technospurs/"
+//#define TECHNO_SPURS_ROOT_PATH      "/home/tstone10/sgn/bkup/private/projs/SGNBarc/Technospurs/"
 #define TECHNO_SPURS_WDOG_FILE      "WDog/WatchDog"
 #define TECHNO_SPURS_WDOG_ROOT      "/root/WatchDog"
 
