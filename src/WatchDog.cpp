@@ -127,7 +127,7 @@ std::string WatchDog::getAllVerAsJson() {
 void WatchDog::addMeToProcList() {
     Process *pProc  = new Process();
     pProc->setName(WDOG_PROC_NAME);
-    pProc->setPid(0);
+    pProc->setPid(getpid());
     pProc->setPet(time(0));
     pProc->setRunCmd("");
     pProc->setVer(WATCHDOG_VERSION);

@@ -34,7 +34,7 @@
 #define WiFi_INTERFACE          "wlan"
 //#define WiFi_INTERFACE          "wlp"
 
-#define WDOG_PROC_NAME          "watchdog"
+#define WDOG_PROC_NAME          "WatchDog"
 
 class Process {
     std::string strName, strRun;
@@ -78,6 +78,7 @@ public:
     void pushIfNew(Process *pProc);
     bool updateSSID(std::string strJson);
     std::string removeSSID(std::string strFile, std::string strSSID);
+    void addMeToProcList();
 
     static void *recvThread(void *);
     static void *wdogThread(void *);
