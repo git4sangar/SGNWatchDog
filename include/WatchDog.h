@@ -24,7 +24,6 @@
 #define WiFi_SSID       (4)
 #define WHERE_R_U       (5)
 
-#define BUFFSIZE             (1024 * 10)
 #define MAX_INTERVAL_SECs   (30)
 #define GET_UP_TIME_SECs    (2 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)

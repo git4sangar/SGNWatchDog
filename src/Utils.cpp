@@ -15,9 +15,31 @@
 #include <strings.h>
 #include <ifaddrs.h>
 #include <unistd.h>
+#include <stdio.h>
 #include "JsonFactory.h"
 #include "JsonException.h"
 #include "Utils.h"
+
+bool Utils::isNewWDogAvailable() {
+    int len = 0;
+    bool bRet = false;
+    char chunk[BUFFSIZE];
+    FILE *fpSrc = NULL, *fpDst = NULL;
+
+    std::string strNewWDog  = std::string(TECHNO_SPURS_ROOT_PATH) + std::string(TECHNO_SPURS_WDOG_FILE);
+    fpSrc = fopen(strNewWDog.c_str(), "rb");
+
+    if(fpSrc) {
+        fpDst = fopen(TECHNO_SPURS_WDOG_ROOT, "wb");
+        while((len = fread(chunk, 1, BUFFSIZE, fpSrc)) >= BUFFSIZE) {
+            fwrite(chunk, 1, len, fpDst);
+        }
+        fwrite(chunk, 1, len, fpDst);
+        bRet = true;
+    }
+    unlink(strNewWDog.c_str());
+    return bRet;
+}
 
 std::string Utils::prepareLogPacket(std::string strLog) {
     std::string strPkt;
