@@ -16,8 +16,8 @@
 
 int main() {
     Logger &info_log = Logger::getInstance();
-
-    info_log << "Main: Starting WatchDog version 2" << std::endl;
+    
+    info_log << "Main: Starting WatchDog version " << WATCHDOG_VERSION << std::endl;
 
     //	There will be a reboot by Jabber Client after every download
     //	So checking for a new WDog only during start of the process
