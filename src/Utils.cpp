@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 
@@ -22,24 +23,28 @@
 
 bool Utils::isNewWDogAvailable() {
     int len = 0;
-    bool bRet = false;
     char chunk[BUFFSIZE];
     FILE *fpSrc = NULL, *fpDst = NULL;
 
     std::string strNewWDog  = std::string(TECHNO_SPURS_ROOT_PATH) + std::string(TECHNO_SPURS_WDOG_FILE);
     fpSrc = fopen(strNewWDog.c_str(), "rb");
+    if(!fpSrc) return false;
 
-    if(fpSrc) {
-        fpDst = fopen(TECHNO_SPURS_WDOG_ROOT, "wb");
-        while((len = fread(chunk, 1, BUFFSIZE, fpSrc)) >= BUFFSIZE) {
-            fwrite(chunk, 1, len, fpDst);
-        }
+    //	Delete the existing one, otherwise fopen will fail
+    unlink(TECHNO_SPURS_WDOG_ROOT);
+    fpDst = fopen(TECHNO_SPURS_WDOG_ROOT, "wb");
+
+    while((len = fread(chunk, 1, BUFFSIZE, fpSrc)) >= BUFFSIZE) {
         fwrite(chunk, 1, len, fpDst);
-	fclose(fpSrc); fclose(fpDst);
-        bRet = true;
     }
+    fwrite(chunk, 1, len, fpDst);
+    fclose(fpSrc); fclose(fpDst);
+
+    chmod(TECHNO_SPURS_WDOG_ROOT, S_IRWXU | S_IRGRP | S_IROTH);
+
+    //	Delete it so that on next reboot, it will not copy
     unlink(strNewWDog.c_str());
-    return bRet;
+    return true;
 }
 
 std::string Utils::prepareLogPacket(std::string strLog) {

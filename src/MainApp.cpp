@@ -18,6 +18,9 @@ int main() {
     Logger &info_log = Logger::getInstance();
 
     info_log << "Main: Starting WatchDog version 2" << std::endl;
+
+    //	There will be a reboot by Jabber Client after every download
+    //	So checking for a new WDog only during start of the process
     if(Utils::isNewWDogAvailable()) {
         info_log << "Main: Uploaded a new WatchDog. So rebooting in 30 secs..." << std::endl;
         sleep(30);
