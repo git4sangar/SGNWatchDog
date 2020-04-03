@@ -25,7 +25,7 @@
 #define WHERE_R_U       (5)
 
 #define MAX_INTERVAL_SECs   (30)
-#define GET_UP_TIME_SECs    (2 * MAX_INTERVAL_SECs)
+#define GET_UP_TIME_SECs    (4 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
 #define WATCHDOG_VERSION    (2)
 

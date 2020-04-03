@@ -270,7 +270,7 @@ void *WatchDog::recvThread(void *pUserData) {
         JsonFactory jsRoot;
         std::stringstream ss;
 
-        recvd       = recvfrom(sockfd, buf, BUFFSIZE, 0, (struct sockaddr *) &clientaddr, (socklen_t*)&clientlen);
+        recvd       = recvfrom(sockfd, buf, BUFFSIZE-1, 0, (struct sockaddr *) &clientaddr, (socklen_t*)&clientlen);
         buf[recvd]  = '\0';
         strWho      = Utils::getDotFormattedIp(clientaddr.sin_addr);
         strPkt      = std::string(buf);
