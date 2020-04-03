@@ -25,7 +25,7 @@
 //#define TECHNO_SPURS_ROOT_PATH      "/home/tstone10/sgn/bkup/private/projs/SGNBarc/Technospurs/"
 #define TECHNO_SPURS_WDOG_FILE      "WDog/WatchDog"
 #define TECHNO_SPURS_WDOG_ROOT      "/root/WatchDog"
-#define TECHNO_SPURS_WDOG_LOG       "WDog/wdog_log_"
+#define TECHNO_SPURS_WDOG_LOG       "Logs/wdog_log_"
 
 class Utils {
 public:
