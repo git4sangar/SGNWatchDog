@@ -23,6 +23,8 @@ Logger &Logger:: getInstance() {
 }
 
 Logger::Logger() : bTime (true), writeLock(PTHREAD_MUTEX_INITIALIZER) {
+	std::string strFile	= std::string(TECHNO_SPURS_ROOT_PATH) + std::string(TECHNO_SPURS_WDOG_LOG);
+	fp = fopen( (char *)strFile.c_str(), "w");
 }
 
 void Logger::stampTime() {
@@ -52,6 +54,7 @@ std::string Logger::getLogData() {
 
 Logger &Logger::operator << (StandardEndLine manip) {
 	pthread_mutex_lock(&writeLock);
+	fprintf(fp, "\n"); fflush(fp);
 	ss_log << std::endl; std::cout << std::endl; bTime = true;
 
 	ss_log.seekg(0, std::ios::end);
@@ -67,6 +70,7 @@ Logger &Logger::operator << (StandardEndLine manip) {
 Logger &Logger::operator <<(const std::string strMsg) {
 	pthread_mutex_lock(&writeLock);
 	if(bTime) { stampTime(); bTime = false; }
+	fprintf(fp, "%s", strMsg.c_str()); fflush(fp);
 	ss_log << strMsg; std::cout << strMsg;
 	pthread_mutex_unlock(&writeLock);
 	return *this;
@@ -75,6 +79,7 @@ Logger &Logger::operator <<(const std::string strMsg) {
 Logger &Logger::operator <<(int iVal) {
 	pthread_mutex_lock(&writeLock);
 	if(bTime) { stampTime(); bTime = false; }
+	fprintf(fp, "%d", iVal); fflush(fp);
 	ss_log << iVal; std::cout << iVal;
 	pthread_mutex_unlock(&writeLock);
 	return *this;

@@ -19,6 +19,7 @@
 class Logger {
     bool bTime;
     pthread_mutex_t writeLock;
+    FILE *fp;
 
 	std::stringstream ss_log;
 	Logger();
