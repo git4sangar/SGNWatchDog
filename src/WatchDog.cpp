@@ -62,7 +62,7 @@ void WatchDog::parseHeartBeat(std::string strPkt) {
         pProc->setRunCmd(strRun);
         pProc->setVer(ver);
 
-        info_log << "WatchDog: Parsed HeartBeat " << jsRoot.getJsonString() << std::endl;
+        //info_log << "WatchDog: Parsed HeartBeat " << jsRoot.getJsonString() << std::endl;
         pthread_mutex_lock(&wLock);
         pushIfNew(pProc);   // pProc might be deleted beyond this point
         pthread_mutex_unlock(&wLock);
