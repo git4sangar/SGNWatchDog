@@ -23,6 +23,7 @@
 #define UPLOAD_LOGS     (3)
 #define WiFi_SSID       (4)
 #define WHERE_R_U       (5)
+#define SMART_TV_MAC    (6)
 
 #define MAX_INTERVAL_SECs   (30)
 #define GET_UP_TIME_SECs    (4 * MAX_INTERVAL_SECs)

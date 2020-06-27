@@ -32,6 +32,7 @@ WatchDog :: WatchDog() : wLock(PTHREAD_MUTEX_INITIALIZER), info_log(Logger::getI
     cmds["upload_logs"]     = UPLOAD_LOGS;
     cmds["where_are_you"]   = WHERE_R_U;
     cmds["wifi_details"]    = WiFi_SSID;
+    cmds["smart_tv_mac"]    = SMART_TV_MAC;
 }
 
 WatchDog :: ~WatchDog() {
@@ -307,6 +308,11 @@ void *WatchDog::recvThread(void *pUserData) {
                         << strPkt << "}";
                     info_log << "WatchDog: Sending : " << ss.str() << std::endl;
                     Utils::sendPacket(ss.str(), UDP_DROID_PORT, strWho);
+                    break;
+
+                case SMART_TV_MAC:
+                    info_log << "WatchDog: Sending : Smart TV Mac to Jabber Client" << std::endl;
+                    Utils::sendPacket(strPkt, UDP_Tx_PORT);
                     break;
 
                 case WHERE_R_U:
