@@ -28,7 +28,7 @@
 #define MAX_INTERVAL_SECs   (30)
 #define GET_UP_TIME_SECs    (4 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
-#define WATCHDOG_VERSION    (2)
+#define WATCHDOG_VERSION    (3)
 
 #define WPA_SUPPLICANT_FILE     "/etc/wpa_supplicant/wpa_supplicant.conf"
 //#define WPA_SUPPLICANT_FILE     "/home/tstone10/sgn/bkup/private/projs/SGNBundle/common/wpa_supplicant.conf"
