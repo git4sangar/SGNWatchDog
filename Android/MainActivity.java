@@ -29,7 +29,7 @@ import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity {
     private TextView txtVwRPiIp;
-    private EditText edtSSID, edtPSK;
+    private EditText edtSSID, edtPSK, edtMac;
     private Button btnPing, btnSet;
     private String strRPiIP = "", strBCastIP = "";
 
@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         btnSet          = findViewById(R.id.sgnBtnSet);
         edtSSID         = findViewById(R.id.edtTxtSSID);
         edtPSK          = findViewById(R.id.edtTxtPSK);
+        edtMac          = findViewById(R.id.edtTxtTVMac);
 
         strBCastIP      = rxThread.getBCastIP(true);
 
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         btnSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String strPkt = "";
+                String strPktWiFi = ""; String strPktMac = "";
                 String strSSID  = edtSSID.getText().toString();
                 if(strSSID.isEmpty()) {
                     renderToast("Please enter your WiFi Name", false);
@@ -111,14 +112,25 @@ public class MainActivity extends AppCompatActivity {
                     renderToast("Please enter your WiFi Password", false);
                     return;
                 }
-                JSONObject jsonObject = new JSONObject();
+                String strMAC   = edtMac.getText().toString();
+                if(strMAC.isEmpty()) {
+                    renderToast("Please enter your SmartTV MAC", false);
+                    return;
+                }
+                JSONObject jsObjWiFi    = new JSONObject();
+                JSONObject jsObjMac     = new JSONObject();
                 try {
-                    jsonObject.put("command", "wifi_details");
-                    jsonObject.put("ssid", strSSID);
-                    jsonObject.put("psk", strPSK);
-                    strPkt  = jsonObject.toString();
+                    jsObjWiFi.put("command", "wifi_details");
+                    jsObjWiFi.put("ssid", strSSID);
+                    jsObjWiFi.put("psk", strPSK);
+                    strPktWiFi  = jsObjWiFi.toString();
+
+                    jsObjMac.put("command", "smart_tv_mac");
+                    jsObjMac.put("tv_mac", strMAC);
+                    strPktMac   = jsObjMac.toString();
                 } catch (org.json.JSONException je) { je.printStackTrace();}
-                rxThread.sendPktTo(strRPiIP, strPkt.getBytes());
+                rxThread.sendPktTo(strRPiIP, strPktWiFi.getBytes());
+                rxThread.sendPktTo(strRPiIP, strPktMac.getBytes());
             }
         });
     }

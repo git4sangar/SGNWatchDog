@@ -21,7 +21,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:textStyle="bold"
-        android:text="\nSteps to set WiFi credentials\n\n(01) Switch on Tethering / Hot Spot\n(02) Switch on Smart Meter\n(03) Wait a min to Power On\n(04) Press PING button\n(05) See if IP Address is displayed\n(06) Enter WiFi ssid and password\n(07) Press SET button\n(08) Success message displayed\n(09) Reboot Smart Meter">
+        android:text="Version 1.0\nSteps to set WiFi credentials\n\n(01) Switch on Tethering / Hot Spot\n(02) Switch on Smart Meter\n(03) Wait a min to Power On\n(04) Press PING button\n(05) See if IP Address is displayed\n(06) Enter WiFi ssid, password and TV MAC\n(07) Press SET button\n(08) Success message displayed\n(09) Reboot Smart Meter">
     </TextView>
 
     <View
@@ -82,17 +82,27 @@
         android:paddingTop="10dp"
         android:textStyle="bold" />
 
+    <EditText
+        android:id="@+id/edtTxtTVMac"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/edtTxtPSK"
+        android:gravity="left"
+        android:hint="Smart TV MAC"
+        android:paddingTop="10dp"
+        android:textStyle="bold" />
+
     <View
         android:id="@+id/vwGap3"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_below="@+id/edtTxtPSK" />
+        android:layout_below="@+id/edtTxtTVMac" />
 
     <Button
         android:id="@+id/sgnBtnSet"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_toRightOf="@+id/vwGap3"
-        android:layout_below="@+id/edtTxtPSK"
+        android:layout_below="@+id/edtTxtTVMac"
         android:text="Set" />
 </RelativeLayout>
