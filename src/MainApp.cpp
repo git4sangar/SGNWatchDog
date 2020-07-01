@@ -23,6 +23,7 @@ int main() {
     //	So checking for a new WDog only during start of the process
     if(Utils::isNewWDogAvailable()) {
         info_log << "Main: Uploaded a new WatchDog. So rebooting in 30 secs..." << std::endl;
+	sync();
         sleep(30);
         reboot(RB_AUTOBOOT);
     }

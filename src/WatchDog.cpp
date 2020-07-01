@@ -291,6 +291,8 @@ void *WatchDog::recvThread(void *pUserData) {
 
                 case REBOOT_RPi:
                     info_log << "WatchDog: Rebooting... " << strPkt << std::endl;
+		    sync();
+		    sleep(5);
                     reboot(RB_AUTOBOOT);
                     break;
 
