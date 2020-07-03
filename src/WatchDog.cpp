@@ -148,12 +148,15 @@ void *WatchDog::wdogThread(void *pUserData) {
             int delta = time(0) - pProc->getLastPet();
             if(delta > MAX_INTERVAL_SECs && pProc->isValidPid()) {
                 info_log << "WatchDog: Killing process " << pProc->getName() << std::endl;
+		    sync();
+		    sleep(5);
+                    reboot(RB_AUTOBOOT);
                 // We are going to kill the process & launch it again
                 // So don't expect a heart within CHECK_INTERVAL_SECs
                 // Give it a few more secs to get up & running
-                pProc->setPet(time(0) + GET_UP_TIME_SECs);
-                kill(pProc->getPid(), 9); pProc->invalidatePid();
-                pProc->launchProc();
+                //pProc->setPet(time(0) + GET_UP_TIME_SECs);
+                //kill(pProc->getPid(), 9); pProc->invalidatePid();
+                //pProc->launchProc();
             }
             if(0 > delta) {
                 info_log << "WatchDog: Process " << pProc->getName()
