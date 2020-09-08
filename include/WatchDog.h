@@ -25,10 +25,10 @@
 #define WHERE_R_U       (5)
 #define SMART_TV_MAC    (6)
 
-#define MAX_INTERVAL_SECs   (60)
+#define MAX_INTERVAL_SECs   (5 * 60) // 60 to 5*60 as per Dinesh on 2020-09-08
 #define GET_UP_TIME_SECs    (4 * MAX_INTERVAL_SECs)
 #define CHECK_INTERVAL_SECs (15)
-#define WATCHDOG_VERSION    (5)
+#define WATCHDOG_VERSION    (6)
 
 #define WPA_SUPPLICANT_FILE     "/etc/wpa_supplicant/wpa_supplicant.conf"
 //#define WPA_SUPPLICANT_FILE     "/home/tstone10/sgn/bkup/private/projs/SGNBundle/common/wpa_supplicant.conf"
