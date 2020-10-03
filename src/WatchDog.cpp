@@ -227,6 +227,9 @@ bool WatchDog::updateSSID(std::string strJson) {
         jsRoot.validateJSONAndGetValue("psk", strPSK);
     } catch(JsonException &je) { info_log << je.what() << std::endl;}
 
+	info_log << "WatchDog: Parsed SSID: " << strSSID << ", Password: " << strPSK << std::endl;
+	info_log << "WatchDog: Length of SSID: " << strSSID.length() << ", Length of Password: " << strPSK.length() << std::endl;
+
     if(!strSSID.empty() && !strPSK.empty()) {
         len = 0;
         fp = fopen(WPA_SUPPLICANT_FILE, "r");
@@ -252,7 +255,7 @@ bool WatchDog::updateSSID(std::string strJson) {
             fclose(fp);
             bRet = true;
         }
-
+	info_log << "WatchDog: Content of wap_supplicant file after setting SSID & Password\n" << strFile << std::endl;
     }
     return bRet;
 }
@@ -281,7 +284,7 @@ void *WatchDog::recvThread(void *pUserData) {
         try {
             jsRoot.setJsonString(std::string(buf));
             jsRoot.validateJSONAndGetValue("command", strCmd);
-            info_log << "WatchDog: Got command " << strCmd << " from " << strWho << std::endl;
+            info_log << "WatchDog: Got request packet " << strPkt << " from " << strWho << std::endl;
             switch(pThis->cmds[strCmd]) {
                 case HEART_BEAT:
                     pThis->parseHeartBeat(strPkt);
