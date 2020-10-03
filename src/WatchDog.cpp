@@ -313,11 +313,17 @@ void *WatchDog::recvThread(void *pUserData) {
                         << strPkt << "}";
                     info_log << "WatchDog: Sending : " << ss.str() << std::endl;
                     Utils::sendPacket(ss.str(), UDP_DROID_PORT, strWho);
+
+		    strPkt  = Utils::prepareLogPacket(info_log.getLogData());
+                    Utils::sendPacket(strPkt, UDP_Tx_PORT);
                     break;
 
                 case SMART_TV_MAC:
                     info_log << "WatchDog: Sending : Smart TV Mac to Jabber Client" << std::endl;
                     Utils::sendPacket(strPkt, UDP_Tx_PORT);
+
+		    strPkt  = Utils::prepareLogPacket(info_log.getLogData());
+		    Utils::sendPacket(strPkt, UDP_Tx_PORT);
                     break;
 
                 case WHERE_R_U:
