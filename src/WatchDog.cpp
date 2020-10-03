@@ -87,9 +87,6 @@ void WatchDog::pushIfNew(Process *newProc) {
         }
     }
     if(newProc) {
-        //  Process is just starting.
-        //  So give enough time for it to get up & running
-        newProc->setPet(time(0) + GET_UP_TIME_SECs);
         processes.push_back(newProc);
     }
 }
