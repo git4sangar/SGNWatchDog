@@ -239,7 +239,8 @@ bool WatchDog::updateSSID(std::string strJson) {
 
     if(0 < len) {
         strFile = std::string(file_content);
-        if(std::string::npos != strFile.find(strSSID)) {
+	std::string strTmp  = std::string("\"") + strSSID + std::string("\"");
+        if(std::string::npos != strFile.find(strTmp)) {
             strFile = removeSSID(strFile, strSSID);
         }
         ss << "\nnetwork={\n\tssid=\"" << strSSID
